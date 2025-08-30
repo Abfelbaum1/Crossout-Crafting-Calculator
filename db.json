@@ -24,7 +24,7 @@
     "name": "Sinus-0",
     "nameEn": "Item Name EN",
     "rarity": "special",
-	"craftable": "true"
+	"craftable": "true",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
@@ -34,7 +34,7 @@
     "name": "Spectre-2",
     "nameEn": "Item Name EN",
     "rarity": "epic",
-	"craftable": "true"
+	"craftable": "true",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
@@ -44,7 +44,7 @@
     "name": "Aspect",
     "nameEn": "Item Name EN",
     "rarity": "legendary",
-	"craftable": "true"
+	"craftable": "true",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
@@ -54,7 +54,7 @@
     "name": "Punisher",
     "nameEn": "Item Name EN",
     "rarity": "relic",
-	"craftable": "true"
+	"craftable": "true",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
@@ -64,7 +64,7 @@
     "name": "bumbum",
     "nameEn": "Item Name EN",
     "rarity": "relic",
-	"craftable": "false"
+	"craftable": "false",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
