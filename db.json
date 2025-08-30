@@ -7,8 +7,8 @@
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
-  },
-   {
+  }
+   ,{
     "id": 2,
     "name": "Vector",
     "nameEn": "Vector",
@@ -16,8 +16,8 @@
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
-  },
-    {
+  }
+   ,{
     "id": 3,
     "name": "Sinus-0",
     "nameEn": "Item Name EN",
@@ -25,8 +25,8 @@
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
-  },
-   {
+  }
+   ,{
     "id": 4,
     "name": "Spectre-2",
     "nameEn": "Item Name EN",
@@ -43,8 +43,8 @@
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
-  },
-   {
+  }
+   ,{
     "id": 6,
     "name": "Punisher",
     "nameEn": "Item Name EN",
