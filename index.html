@@ -346,6 +346,21 @@ h1 {
   white-space: pre-wrap;
 }
 
+.not-craftable {
+  background: rgba(214, 48, 49, 0.2);
+  color: var(--light);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--danger);
+  margin: 20px 0;
+  text-align: center;
+}
+
+.not-craftable i {
+  color: var(--danger);
+  margin-right: 8px;
+}
+
 footer {
   margin-top: 30px;
   text-align: center;
@@ -419,19 +434,24 @@ footer {
       <div class="item-name" id="itemName">Item Name</div>
     </div>
     
-    <div class="crafting-costs">
+    <div id="notCraftableMessage" class="not-craftable" style="display: none;">
+      <i class="fas fa-times-circle"></i>
+      <span id="notCraftableText" data-de="Dieses Item ist nicht herstellbar." data-en="This item is not craftable.">Dieses Item ist nicht herstellbar.</span>
+    </div>
+    
+    <div class="crafting-costs" id="craftingCostsSection">
       <div class="cost-title" data-de="Herstellungskosten:" data-en="Crafting Costs:">Herstellungskosten:</div>
       <div id="costList">
         <!-- Kosten werden dynamisch eingefügt -->
       </div>
     </div>
     
-    <div class="quantity-control">
+    <div class="quantity-control" id="quantityControlSection">
       <span class="quantity-label" data-de="Anzahl:" data-en="Quantity:">Anzahl:</span>
       <input type="number" class="quantity-input" id="itemQuantity" value="1" min="1" max="100">
     </div>
     
-    <div class="total-resources">
+    <div class="total-resources" id="totalResourcesSection">
       <div class="total-title" data-de="Benötigte Ressourcen:" data-en="Required Resources:">Benötigte Ressourcen:</div>
       <div id="totalResources">
         <!-- Gesamtressourcen werden dynamisch eingefügt -->
@@ -480,6 +500,11 @@ const loadingElement = document.getElementById('loading');
 const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
 const debugInfo = document.getElementById('debugInfo');
+const notCraftableMessage = document.getElementById('notCraftableMessage');
+const notCraftableText = document.getElementById('notCraftableText');
+const craftingCostsSection = document.getElementById('craftingCostsSection');
+const quantityControlSection = document.getElementById('quantityControlSection');
+const totalResourcesSection = document.getElementById('totalResourcesSection');
 
 // Debug-Informationen anzeigen
 function showDebugInfo(message) {
@@ -657,26 +682,46 @@ function updateSelectedItem(item) {
   const displayName = currentLanguage === 'de' ? item.name : item.nameEn || item.name;
   itemName.textContent = displayName;
   
-  // Herstellungskosten anzeigen
-  costList.innerHTML = '';
-  if (item.costs && Array.isArray(item.costs)) {
-    item.costs.forEach(cost => {
-      const costElement = document.createElement('div');
-      costElement.className = 'cost-item';
-      const resourceName = currentLanguage === 'de' ? cost.name : cost.nameEn || cost.name;
-      costElement.innerHTML = `
-        <div class="cost-name">
-          <i class="fas fa-cog"></i>
-          <span>${resourceName}</span>
-        </div>
-        <div class="cost-amount">${cost.amount || 0}</div>
-      `;
-      costList.appendChild(costElement);
-    });
+  // Prüfen, ob das Item herstellbar ist
+  if (item.craftable === false) {
+    // Nicht herstellbar: Zeige entsprechende Nachricht
+    notCraftableMessage.style.display = 'block';
+    craftingCostsSection.style.display = 'none';
+    quantityControlSection.style.display = 'none';
+    totalResourcesSection.style.display = 'none';
+    
+    // Übersetze die Nachricht
+    notCraftableText.textContent = currentLanguage === 'de' 
+      ? `${displayName} ist nicht herstellbar.` 
+      : `${displayName} is not craftable.`;
+  } else {
+    // Herstellbar: Zeige Herstellungskosten
+    notCraftableMessage.style.display = 'none';
+    craftingCostsSection.style.display = 'block';
+    quantityControlSection.style.display = 'flex';
+    totalResourcesSection.style.display = 'block';
+    
+    // Herstellungskosten anzeigen
+    costList.innerHTML = '';
+    if (item.costs && Array.isArray(item.costs)) {
+      item.costs.forEach(cost => {
+        const costElement = document.createElement('div');
+        costElement.className = 'cost-item';
+        const resourceName = currentLanguage === 'de' ? cost.name : cost.nameEn || cost.name;
+        costElement.innerHTML = `
+          <div class="cost-name">
+            <i class="fas fa-cog"></i>
+            <span>${resourceName}</span>
+          </div>
+          <div class="cost-amount">${cost.amount || 0}</div>
+        `;
+        costList.appendChild(costElement);
+      });
+    }
+    
+    // Gesamtressourcen berechnen
+    calculateTotalResources();
   }
-  
-  // Gesamtressourcen berechnen
-  calculateTotalResources();
   
   // Ausgewähltes Item anzeigen
   selectedItemElement.classList.add('visible');
@@ -684,7 +729,7 @@ function updateSelectedItem(item) {
 
 // Gesamtressourcen berechnen
 function calculateTotalResources() {
-  if (!selectedItemData) return;
+  if (!selectedItemData || selectedItemData.craftable === false) return;
   
   const quantity = parseInt(itemQuantity.value) || 1;
   totalResources.innerHTML = '';
