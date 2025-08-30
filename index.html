@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crossout Crafting Rechner</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary: #6c5ce7;
+  --secondary: #a29bfe;
+  --dark: #1a1a2e;
+  --darker: #0f0f1a;
+  --light: #f8f9fa;
+  --success: #00b894;
+  --warning: #fdcb6e;
+  --danger: #d63031;
+  --info: #0984e3;
+  --common: #a0a0a0;
+  --rare: #2d8ff9;
+  --epic: #c255ef;
+  --legendary: #f8a82d;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--darker), var(--dark));
+  color: var(--light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+  position: relative;
+}
+
+.language-switcher {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.flag-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 40px;
+  height: 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+.flag-btn.de {
+  background: linear-gradient(to bottom, #000000 33%, #dd0000 33%, #dd0000 66%, #ffce00 66%);
+}
+
+.flag-btn.en {
+  background: linear-gradient(135deg, #012169 0%, #012169 40%, #C8102E 40%, #C8102E 60%, #FFFFFF 60%, #FFFFFF 66%, #C8102E 66%, #C8102E 100%);
+}
+
+.flag-btn.active {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--primary), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.flag-btn:hover {
+  transform: scale(1.15);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, var(--secondary), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(108, 92, 231, 0.3);
+}
+
+.subtitle {
+  color: var(--secondary);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.container {
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 45px 12px 15px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 20, 0.6);
+  color: var(--light);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary);
+}
+
+.item-list {
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(10, 10, 20, 0.6);
+  border-radius: 8px;
+  margin-top: 5px;
+  display: none;
+}
+
+.item-list.visible {
+  display: block;
+}
+
+.item-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item-option:hover {
+  background: rgba(108, 92, 231, 0.2);
+}
+
+.rarity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rarity-common { background-color: var(--common); }
+.rarity-rare { background-color: var(--rare); }
+.rarity-epic { background-color: var(--epic); }
+.rarity-legendary { background-color: var(--legendary); }
+
+.selected-item {
+  background: rgba(10, 10, 20, 0.6);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.selected-item.visible {
+  display: block;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.item-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.crafting-costs {
+  margin-top: 20px;
+}
+
+.cost-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 5px;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cost-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cost-amount {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  background: rgba(10, 10, 20, 0.4);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.quantity-label {
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+.quantity-input {
+  width: 80px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 20, 0.6);
+  color: var(--light);
+  text-align: center;
+  font-size: 1rem;
+}
+
+.total-resources {
+  margin-top: 25px;
+  padding: 20px;
+  background: rgba(10, 10, 20, 0.4);
+  border-radius: 10px;
+}
+
+.total-title {
+  text-align: center;
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.total-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-text {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(10, 10, 20, 0.4);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--secondary);
+}
+
+.info-text i {
+  color: var(--primary);
+  margin-right: 5px;
+}
+
+.all-items-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary);
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 5px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--secondary);
+}
+
+.error-message {
+  background: rgba(214, 48, 49, 0.2);
+  color: var(--light);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--danger);
+  margin: 20px 0;
+}
+
+.debug-info {
+  background: rgba(9, 132, 227, 0.2);
+  color: var(--light);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--info);
+  margin: 10px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  color: var(--secondary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+  
+  .item-name {
+    font-size: 1.2rem;
+  }
+  
+  .language-switcher {
+    position: relative;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  
+  .flag-btn {
+    width: 35px;
+    height: 26px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="language-switcher">
+    <button class="flag-btn de active" id="lang-de" title="Deutsch">DE</button>
+    <button class="flag-btn en" id="lang-en" title="English">EN</button>
+  </div>
+  <h1 data-de="Crossout Crafting Rechner" data-en="Crossout Crafting Calculator">Crossout Crafting Rechner</h1>
+  <p class="subtitle" data-de="Berechne die benötigten Ressourcen zum Herstellen von Items in Crossout" data-en="Calculate the required resources to craft items in Crossout">Berechne die benötigten Ressourcen zum Herstellen von Items in Crossout</p>
+</header>
+
+<div class="container">
+  <div class="search-container">
+    <input type="text" class="search-input" id="itemSearch" placeholder="Item suchen..." data-de-placeholder="Item suchen..." data-en-placeholder="Search item...">
+    <i class="fas fa-search search-icon"></i>
+    <div class="item-list" id="itemList">
+      <!-- Items werden dynamisch eingefügt -->
+    </div>
+  </div>
+
+  <div id="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span data-de="Lade Items aus db.json..." data-en="Loading items from db.json...">Lade Items aus db.json...</span>
+  </div>
+
+  <div id="errorMessage" class="error-message" style="display: none;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span id="errorText" data-de="Fehler beim Laden der Items." data-en="Error loading items.">Fehler beim Laden der Items.</span>
+  </div>
+
+  <div id="debugInfo" class="debug-info" style="display: none;">
+    Debug-Informationen erscheinen hier...
+  </div>
+
+  <div class="selected-item" id="selectedItem">
+    <div class="item-header">
+      <div class="rarity-dot" id="itemRarity"></div>
+      <div class="item-name" id="itemName">Item Name</div>
+    </div>
+    
+    <div class="crafting-costs">
+      <div class="cost-title" data-de="Herstellungskosten:" data-en="Crafting Costs:">Herstellungskosten:</div>
+      <div id="costList">
+        <!-- Kosten werden dynamisch eingefügt -->
+      </div>
+    </div>
+    
+    <div class="quantity-control">
+      <span class="quantity-label" data-de="Anzahl:" data-en="Quantity:">Anzahl:</span>
+      <input type="number" class="quantity-input" id="itemQuantity" value="1" min="1" max="100">
+    </div>
+    
+    <div class="total-resources">
+      <div class="total-title" data-de="Benötigte Ressourcen:" data-en="Required Resources:">Benötigte Ressourcen:</div>
+      <div id="totalResources">
+        <!-- Gesamtressourcen werden dynamisch eingefügt -->
+      </div>
+    </div>
+  </div>
+
+  <div id="allItemsSection" style="display: none;">
+    <div class="all-items-title" data-de="Alle verfügbaren Items:" data-en="All available items:">Alle verfügbaren Items:</div>
+    <div id="allItemsList">
+      <!-- Alle Items werden hier angezeigt -->
+    </div>
+  </div>
+
+  <div class="info-text">
+    <p><i class="fas fa-info-circle"></i> <span data-de="Wähle ein Item aus der Liste um die Herstellungskosten zu sehen" data-en="Select an item from the list to see crafting costs">Wähle ein Item aus der Liste um die Herstellungskosten zu sehen</span></p>
+    <p><i class="fas fa-info-circle"></i> <span data-de="Ändere die Anzahl um die benötigten Ressourcen für mehrere Items zu berechnen" data-en="Change the quantity to calculate resources for multiple items">Ändere die Anzahl um die benötigten Ressourcen für mehrere Items zu berechnen</span></p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Crossout Crafting Rechner | <span data-de="Designed with" data-en="Designed with">Designed with</span> <i class="fas fa-heart" style="color: var(--danger)"></i></p>
+</footer>
+
+<script>
+// Globale Variablen
+let itemsDatabase = [];
+let selectedItemData = null;
+let currentLanguage = 'de';
+
+// DOM Elements
+const itemSearch = document.getElementById('itemSearch');
+const itemList = document.getElementById('itemList');
+const selectedItemElement = document.getElementById('selectedItem');
+const itemRarity = document.getElementById('itemRarity');
+const itemName = document.getElementById('itemName');
+const costList = document.getElementById('costList');
+const itemQuantity = document.getElementById('itemQuantity');
+const totalResources = document.getElementById('totalResources');
+const allItemsSection = document.getElementById('allItemsSection');
+const allItemsList = document.getElementById('allItemsList');
+const langDeBtn = document.getElementById('lang-de');
+const langEnBtn = document.getElementById('lang-en');
+const translatableElements = document.querySelectorAll('[data-de]');
+const loadingElement = document.getElementById('loading');
+const errorMessage = document.getElementById('errorMessage');
+const errorText = document.getElementById('errorText');
+const debugInfo = document.getElementById('debugInfo');
+
+// Debug-Informationen anzeigen
+function showDebugInfo(message) {
+  debugInfo.style.display = 'block';
+  debugInfo.textContent = message;
+  console.log('DEBUG:', message);
+}
+
+// Externe Datenbank aus db.json laden
+async function loadItemsDatabase() {
+  try {
+    showDebugInfo('Starte Laden der db.json...');
+    
+    // Lade die db.json Datei aus dem gleichen Ordner
+    const response = await fetch('db.json');
+    
+    showDebugInfo(`Response status: ${response.status} ${response.statusText}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP-Fehler! Status: ${response.status} - ${response.statusText}`);
+    }
+    
+    const responseText = await response.text();
+    showDebugInfo(`Response erhalten: ${responseText.substring(0, 200)}...`);
+    
+    // Versuche JSON zu parsen
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      showDebugInfo('JSON erfolgreich geparst');
+    } catch (parseError) {
+      showDebugInfo(`JSON Parse Error: ${parseError.message}\nResponse: ${responseText}`);
+      throw new Error(`Ungültiges JSON-Format: ${parseError.message}`);
+    }
+    
+    // Überprüfe ob die Datenbank korrekt geladen wurde
+    if (!Array.isArray(data)) {
+      showDebugInfo(`Daten sind kein Array: ${typeof data}`);
+      throw new Error('Datenbank muss ein Array von Items sein');
+    }
+    
+    if (data.length === 0) {
+      showDebugInfo('Datenbank ist leer (0 Items)');
+    } else {
+      showDebugInfo(`Erfolgreich ${data.length} Items geladen`);
+    }
+    
+    itemsDatabase = data;
+    
+    // Erfolg: Ladeanimation ausblenden, Inhalte einblenden
+    loadingElement.style.display = 'none';
+    allItemsSection.style.display = 'block';
+    errorMessage.style.display = 'none';
+    debugInfo.style.display = 'none';
+    
+    // Items anzeigen
+    displayAllItems();
+    
+  } catch (error) {
+    console.error('Fehler beim Laden der Datenbank:', error);
+    loadingElement.style.display = 'none';
+    errorMessage.style.display = 'block';
+    
+    const errorMessageText = currentLanguage === 'de' 
+      ? `Fehler beim Laden: ${error.message}` 
+      : `Loading error: ${error.message}`;
+    
+    errorText.textContent = errorMessageText;
+    showDebugInfo(`FEHLER: ${error.message}\nStack: ${error.stack}`);
+  }
+}
+
+// Sprache umschalten
+function switchLanguage(lang) {
+  currentLanguage = lang;
+  translatableElements.forEach(element => {
+    const attr = lang === 'de' ? 'data-de' : 'data-en';
+    element.textContent = element.getAttribute(attr);
+  });
+  
+  // Platzhalter für Suchfeld aktualisieren
+  const placeholderAttr = lang === 'de' ? 'data-de-placeholder' : 'data-en-placeholder';
+  itemSearch.placeholder = itemSearch.getAttribute(placeholderAttr);
+  
+  // Button States aktualisieren
+  if (lang === 'de') {
+    langDeBtn.classList.add('active');
+    langEnBtn.classList.remove('active');
+  } else {
+    langDeBtn.classList.remove('active');
+    langEnBtn.classList.add('active');
+  }
+  
+  // Item-Liste und ausgewähltes Item aktualisieren
+  filterItems();
+  if (selectedItemData) {
+    updateSelectedItem(selectedItemData);
+  }
+}
+
+// Alle Items anzeigen
+function displayAllItems() {
+  allItemsList.innerHTML = '';
+  
+  if (itemsDatabase.length === 0) {
+    allItemsList.innerHTML = `
+      <div class="loading">
+        <span data-de="Keine Items in der Datenbank" data-en="No items in database">Keine Items in der Datenbank</span>
+      </div>
+    `;
+    return;
+  }
+  
+  itemsDatabase.forEach(item => {
+    const itemElement = document.createElement('div');
+    itemElement.className = 'item-option';
+    itemElement.innerHTML = `
+      <div class="rarity-dot rarity-${item.rarity || 'common'}"></div>
+      <div>${currentLanguage === 'de' ? item.name : item.nameEn || item.name}</div>
+    `;
+    itemElement.addEventListener('click', () => selectItem(item));
+    allItemsList.appendChild(itemElement);
+  });
+}
+
+// Event Listener für Sprachumschaltung
+langDeBtn.addEventListener('click', () => switchLanguage('de'));
+langEnBtn.addEventListener('click', () => switchLanguage('en'));
+
+// Items filtern basierend auf Suchbegriff
+function filterItems() {
+  const searchTerm = itemSearch.value.toLowerCase();
+  itemList.innerHTML = '';
+  
+  if (searchTerm.length === 0) {
+    itemList.classList.remove('visible');
+    return;
+  }
+  
+  const filteredItems = itemsDatabase.filter(item => {
+    const name = currentLanguage === 'de' ? item.name : item.nameEn || item.name;
+    return name.toLowerCase().includes(searchTerm);
+  });
+  
+  if (filteredItems.length > 0) {
+    filteredItems.forEach(item => {
+      const option = document.createElement('div');
+      option.className = 'item-option';
+      option.innerHTML = `
+        <div class="rarity-dot rarity-${item.rarity || 'common'}"></div>
+        <div>${currentLanguage === 'de' ? item.name : item.nameEn || item.name}</div>
+      `;
+      option.addEventListener('click', () => selectItem(item));
+      itemList.appendChild(option);
+    });
+    itemList.classList.add('visible');
+  } else {
+    itemList.classList.remove('visible');
+  }
+}
+
+// Item auswählen
+function selectItem(item) {
+  selectedItemData = item;
+  const displayName = currentLanguage === 'de' ? item.name : item.nameEn || item.name;
+  itemSearch.value = displayName;
+  itemList.classList.remove('visible');
+  updateSelectedItem(item);
+}
+
+// Ausgewähltes Item aktualisieren
+function updateSelectedItem(item) {
+  // Rarität und Name aktualisieren
+  itemRarity.className = `rarity-dot rarity-${item.rarity || 'common'}`;
+  const displayName = currentLanguage === 'de' ? item.name : item.nameEn || item.name;
+  itemName.textContent = displayName;
+  
+  // Herstellungskosten anzeigen
+  costList.innerHTML = '';
+  if (item.costs && Array.isArray(item.costs)) {
+    item.costs.forEach(cost => {
+      const costElement = document.createElement('div');
+      costElement.className = 'cost-item';
+      const resourceName = currentLanguage === 'de' ? cost.name : cost.nameEn || cost.name;
+      costElement.innerHTML = `
+        <div class="cost-name">
+          <i class="fas fa-cog"></i>
+          <span>${resourceName}</span>
+        </div>
+        <div class="cost-amount">${cost.amount || 0}</div>
+      `;
+      costList.appendChild(costElement);
+    });
+  }
+  
+  // Gesamtressourcen berechnen
+  calculateTotalResources();
+  
+  // Ausgewähltes Item anzeigen
+  selectedItemElement.classList.add('visible');
+}
+
+// Gesamtressourcen berechnen
+function calculateTotalResources() {
+  if (!selectedItemData) return;
+  
+  const quantity = parseInt(itemQuantity.value) || 1;
+  totalResources.innerHTML = '';
+  
+  // Ressourcen zusammenzählen
+  const resourceTotals = {};
+  if (selectedItemData.costs && Array.isArray(selectedItemData.costs)) {
+    selectedItemData.costs.forEach(cost => {
+      const resourceName = currentLanguage === 'de' ? cost.name : cost.nameEn || cost.name;
+      resourceTotals[resourceName] = (cost.amount || 0) * quantity;
+    });
+  }
+  
+  // Gesamtressourcen anzeigen
+  Object.entries(resourceTotals).forEach(([resource, amount]) => {
+    const resourceElement = document.createElement('div');
+    resourceElement.className = 'total-item';
+    resourceElement.innerHTML = `
+      <span>${resource}</span>
+      <span class="cost-amount">${amount}</span>
+    `;
+    totalResources.appendChild(resourceElement);
+  });
+}
+
+// Event Listener
+itemSearch.addEventListener('input', filterItems);
+itemQuantity.addEventListener('input', calculateTotalResources);
+
+// Klick außerhalb der Item-Liste schließt diese
+document.addEventListener('click', (e) => {
+  if (!itemSearch.contains(e.target) && !itemList.contains(e.target)) {
+    itemList.classList.remove('visible');
+  }
+});
+
+// Neuladen-Button Funktionalität
+function addReloadButton() {
+  const reloadButton = document.createElement('button');
+  reloadButton.innerHTML = '<i class="fas fa-sync-alt"></i> Datenbank neu laden';
+  reloadButton.style.cssText = `
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    width: 100%;
+  `;
+  reloadButton.onclick = loadItemsDatabase;
+  
+  const infoText = document.querySelector('.info-text');
+  infoText.parentNode.insertBefore(reloadButton, infoText);
+}
+
+// Initialisierung
+switchLanguage('de');
+loadItemsDatabase();
+addReloadButton();
+</script>
+
+</body>
+</html>

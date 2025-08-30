@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "name": "Item Name DE",
+    "nameEn": "Item Name EN",
+    "rarity": "epic",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+]
