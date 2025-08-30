@@ -1,9 +1,54 @@
 [
   {
     "id": 1,
-    "name": "Item Name DE",
+    "name": "LM-54 Chord",
+    "nameEn": "LM-54 Chord",
+    "rarity": "common",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+   {
+    "id": 2,
+    "name": "Vector",
+    "nameEn": "Vector",
+    "rarity": "rare",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+    {
+    "id": 3,
+    "name": "Sinus-0",
+    "nameEn": "Item Name EN",
+    "rarity": "special",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+   {
+    "id": 4,
+    "name": "Spectre-2",
     "nameEn": "Item Name EN",
     "rarity": "epic",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+   {
+    "id": 5,
+    "name": "Aspect",
+    "nameEn": "Item Name EN",
+    "rarity": "legendary",
+    "costs": [
+      {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
+    ]
+  }
+   {
+    "id": 6,
+    "name": "Punisher",
+    "nameEn": "Item Name EN",
+    "rarity": "relic",
     "costs": [
       {"name": "Ressource DE", "nameEn": "Resource EN", "amount": 100}
     ]
